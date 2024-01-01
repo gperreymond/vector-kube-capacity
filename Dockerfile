@@ -1,4 +1,4 @@
-FROM ubuntu:22.10 as DOWNLOADER
+FROM ubuntu:24.04 as DOWNLOADER
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 ENV KUBE_CAPACITY_VERSION="0.7.4"
@@ -10,7 +10,7 @@ COPY . .
 RUN mkdir -p /usr/app/bin
 RUN mkdir -p /usr/app/tmp
 # Download kube-capacity
-RUN curl -sLo tmp/kube-capacity.tar.gz https://github.com/robscott/kube-capacity/releases/download/v${KUBE_CAPACITY_VERSION}/kube-capacity_${KUBE_CAPACITY_VERSION}_Linux_x86_64.tar.gz && \
+RUN curl -sLo tmp/kube-capacity.tar.gz https://github.com/robscott/kube-capacity/releases/download/v${KUBE_CAPACITY_VERSION}/kube-capacity_v${KUBE_CAPACITY_VERSION}_linux_arm64.tar.gz && \
     cd tmp && \
     tar -xf kube-capacity.tar.gz && \
     cd .. && \
@@ -23,15 +23,15 @@ RUN curl -sLo tmp/vector.tar.gz https://packages.timber.io/vector/${VECTOR_VERSI
     cd .. && \
     mv tmp/vector-x86_64-unknown-linux-gnu/bin/vector bin/vector && \
     chmod +x bin/vector
-# DOWNLOAD kubectl
+# Download kubectl
 RUN curl -sLo bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
     chmod +x bin/kubectl
 
-FROM ubuntu:22.10
+FROM ubuntu:24.04
 RUN mkdir -p /usr/app
 WORKDIR /usr/app
 RUN apt update && \
-    apt install -y jq unzip curl bc
+    apt install -y jq unzip curl
 RUN mkdir -p /usr/app/scripts
 RUN mkdir -p /usr/app/vector
 COPY --from=DOWNLOADER /usr/app/bin/ /usr/app/bin/
